@@ -1,0 +1,23 @@
+{
+  "name": "notification-system",
+  "version": "1.0.0",
+  "description": "Sistema de notificação em tempo real, semelhante ao \"sininho\" do Youtube.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilliandosSantos89/notification-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/WilliandosSantos89/notification-system/issues"
+  },
+  "homepage": "https://github.com/WilliandosSantos89/notification-system#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
