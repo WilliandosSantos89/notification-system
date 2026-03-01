@@ -1,0 +1,211 @@
+/* ─────────────────────────────────────
+   BASE
+───────────────────────────────────── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f0f0f;
+  color: #e8e8e8;
+  min-height: 100vh;
+}
+
+/* ─────────────────────────────────────
+   HEADER
+───────────────────────────────────── */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+header h1 {
+  font-size: 1.4rem;
+  color: #ffffff;
+}
+
+/* ─────────────────────────────────────
+   SININHO + BADGE
+───────────────────────────────────── */
+.bell-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.bell-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.bell-btn:hover {
+  transform: rotate(20deg);
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background: #ff4444;
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+
+/* ─────────────────────────────────────
+   LOGIN BOX
+───────────────────────────────────── */
+main {
+  max-width: 600px;
+  margin: 48px auto;
+  padding: 0 16px;
+}
+
+.login-box {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-box input {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #e8e8e8;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.login-box input:focus {
+  border-color: #5c6bc0;
+}
+
+.login-box button {
+  padding: 12px 20px;
+  background: #5c6bc0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-box button:hover {
+  background: #3f51b5;
+}
+
+/* ─────────────────────────────────────
+   LISTA DE NOTIFICAÇÕES
+───────────────────────────────────── */
+.notif-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notif-item {
+  padding: 16px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.15s, opacity 0.2s;
+  animation: slideIn 0.3s ease;
+}
+
+.notif-item:hover {
+  transform: translateX(4px);
+}
+
+/* Não lida — destaque */
+.notif-item.unread {
+  background: #1e2a45;
+  border-left: 4px solid #5c6bc0;
+}
+
+/* Lida — apagada */
+.notif-item.read {
+  background: #1a1a1a;
+  border-left: 4px solid #333;
+  opacity: 0.6;
+}
+
+.notif-msg {
+  font-size: 0.95rem;
+}
+
+.notif-time {
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+  margin-left: 16px;
+}
+
+/* ─────────────────────────────────────
+   ANIMAÇÃO DE ENTRADA
+───────────────────────────────────── */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ─────────────────────────────────────
+   UTILITÁRIO
+───────────────────────────────────── */
+.hidden {
+  display: none;
+}
+```
+
+---
+
+## O que vale entender aqui
+
+**box-sizing: border-box** é uma das primeiras coisas que todo dev coloca em qualquer projeto. Ele faz com que padding e border sejam incluídos no tamanho do elemento, evitando comportamentos estranhos de layout.
+
+**position: relative no .bell-wrapper e position: absolute no .badge** é o par clássico pra posicionar o contador em cima do sininho. O absolute sempre se posiciona em relação ao parente relative mais próximo.
+
+**animation: slideIn** faz a notificação "entrar" suavemente quando aparece. Pequeno detalhe, grande diferença na percepção de qualidade.
+
+**border-left colorido no .unread** é o mesmo padrão visual que Gmail, Notion e Slack usam pra indicar item não lido. Simples e eficaz.
+
+---
+
+## Commit agora
+
+**Título:** `feat: frontend da página do usuário`
+
+**Descrição:**
+```
+- Criado index.html com conexão SSE
+- Renderização de notificações em tempo real
+- Marcar como lida ao clicar
+- Badge contador no sininho
+- Som via AudioContext
+- Notificação nativa do navegador
+- CSS completo com animação de entrada

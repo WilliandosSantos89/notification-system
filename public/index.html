@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notificações</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>📬 Meu Feed</h1>
+
+    <!-- O sininho com contador -->
+    <div class="bell-wrapper">
+      <button class="bell-btn" id="bellBtn">🔔</button>
+      <span class="badge hidden" id="badge">0</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Campo para o usuário digitar seu ID -->
+    <div class="login-box">
+      <input type="text" id="userIdInput" placeholder="Digite seu usuário (ex: joao)" />
+      <button onclick="conectar()">Conectar</button>
+    </div>
+
+    <!-- Lista de notificações (começa vazia) -->
+    <ul id="notifList" class="notif-list hidden"></ul>
+  </main>
+
+  <script>
+    let userId = null;
+    let eventSource = null;
+    let unreadCount = 0;
+
+    // ─────────────────────────────────────
+    // CONECTAR — abre o canal SSE
+    // ─────────────────────────────────────
+    function conectar() {
+      const input = document.getElementById('userIdInput');
+      userId = input.value.trim();
+
+      if (!userId) {
+        alert('Digite um nome de usuário!');
+        return;
+      }
+
+      // Fecha conexão anterior se existir
+      if (eventSource) eventSource.close();
+
+      // Abre o canal SSE com o servidor
+      eventSource = new EventSource(`/subscribe/${userId}`);
+
+      // Quando chegar qualquer mensagem do servidor
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === 'history') {
+          // Carrega histórico ao conectar
+          data.notifications.forEach(n => renderNotif(n));
+          atualizarBadge();
+        }
+
+        if (data.type === 'new') {
+          // Nova notificação chegando em tempo real
+          renderNotif(data.notification);
+          unreadCount++;
+          atualizarBadge();
+          tocarSom();
+          notificarNavegador(data.notification.message);
+        }
+      };
+
+      // Mostra a lista e esconde o campo de login
+      document.getElementById('notifList').classList.remove('hidden');
+      document.querySelector('.login-box').classList.add('hidden');
+
+      console.log(`Conectado como: ${userId}`);
+    }
+
+    // ─────────────────────────────────────
+    // RENDERIZAR — cria o item na lista
+    // ─────────────────────────────────────
+    function renderNotif(notif) {
+      const list = document.getElementById('notifList');
+
+      // Evita duplicar notificações que já estão na tela
+      if (document.getElementById(`notif-${notif.id}`)) return;
+
+      const li = document.createElement('li');
+      li.id = `notif-${notif.id}`;
+      li.className = `notif-item ${notif.read ? 'read' : 'unread'}`;
+      li.innerHTML = `
+        <span class="notif-msg">${notif.message}</span>
+        <span class="notif-time">${notif.time}</span>
+      `;
+
+      // Clicar marca como lida
+      li.onclick = () => marcarLida(notif.id, li);
+
+      list.prepend(li); // mais nova no topo
+    }
+
+    // ─────────────────────────────────────
+    // MARCAR COMO LIDA
+    // ─────────────────────────────────────
+    function marcarLida(notifId, elemento) {
+      if (elemento.classList.contains('read')) return;
+
+      fetch(`/read/${userId}/${notifId}`, { method: 'POST' });
+
+      elemento.classList.remove('unread');
+      elemento.classList.add('read');
+
+      unreadCount = Math.max(0, unreadCount - 1);
+      atualizarBadge();
+    }
+
+    // ─────────────────────────────────────
+    // BADGE — contador no sininho
+    // ─────────────────────────────────────
+    function atualizarBadge() {
+      // Conta não lidas direto da tela (mais confiável)
+      unreadCount = document.querySelectorAll('.notif-item.unread').length;
+      const badge = document.getElementById('badge');
+      badge.textContent = unreadCount;
+
+      if (unreadCount > 0) {
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
+      }
+    }
+
+    // ─────────────────────────────────────
+    // SOM — bip quando chega notificação
+    // ─────────────────────────────────────
+    function tocarSom() {
+      const ctx = new AudioContext();
+      const oscillator = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      oscillator.connect(gain);
+      gain.connect(ctx.destination);
+
+      oscillator.frequency.value = 880; // frequência do bip (Hz)
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+      oscillator.start(ctx.currentTime);
+      oscillator.stop(ctx.currentTime + 0.3);
+    }
+
+    // ─────────────────────────────────────
+    // NOTIFICAÇÃO DO NAVEGADOR
+    // ─────────────────────────────────────
+    function notificarNavegador(mensagem) {
+      if (!('Notification' in window)) return;
+
+      if (Notification.permission === 'granted') {
+        new Notification('Nova notificação 🔔', { body: mensagem });
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            new Notification('Nova notificação 🔔', { body: mensagem });
+          }
+        });
+      }
+    }
+  </script>
+
+</body>
+</html>
