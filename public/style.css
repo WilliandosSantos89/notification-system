@@ -180,7 +180,92 @@ main {
 .hidden {
   display: none;
 }
-```
+
+/* ─────────────────────────────────────
+   ADMIN
+───────────────────────────────────── */
+.admin-box {
+  max-width: 600px;
+  margin: 48px auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.card {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card h2 {
+  font-size: 1rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.card input,
+.card textarea {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid #333;
+  background: #0f0f0f;
+  color: #e8e8e8;
+  font-size: 0.95rem;
+  outline: none;
+  resize: none;
+  transition: border 0.2s;
+}
+
+.card textarea {
+  min-height: 80px;
+}
+
+.card input:focus,
+.card textarea:focus {
+  border-color: #5c6bc0;
+}
+
+.card button {
+  padding: 12px;
+  background: #5c6bc0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.card button:hover {
+  background: #3f51b5;
+}
+
+/* Feedback de envio */
+.feedback {
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.feedback.ok {
+  background: #1b3a2a;
+  color: #4caf50;
+  border: 1px solid #2e7d32;
+}
+
+.feedback.erro {
+  background: #3a1b1b;
+  color: #ef5350;
+  border: 1px solid #c62828;
+}
 
 ---
 
@@ -195,17 +280,3 @@ main {
 **border-left colorido no .unread** é o mesmo padrão visual que Gmail, Notion e Slack usam pra indicar item não lido. Simples e eficaz.
 
 ---
-
-## Commit agora
-
-**Título:** `feat: frontend da página do usuário`
-
-**Descrição:**
-```
-- Criado index.html com conexão SSE
-- Renderização de notificações em tempo real
-- Marcar como lida ao clicar
-- Badge contador no sininho
-- Som via AudioContext
-- Notificação nativa do navegador
-- CSS completo com animação de entrada

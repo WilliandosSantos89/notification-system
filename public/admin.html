@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <h1>⚙️ Painel Admin</h1>
+  </header>
+
+  <main>
+    <div class="admin-box">
+
+      <!-- Enviar para usuário específico -->
+      <section class="card">
+        <h2>Enviar para um usuário</h2>
+        <input type="text" id="targetUser" placeholder="ID do usuário (ex: joao)" />
+        <textarea id="msgSingle" placeholder="Mensagem..."></textarea>
+        <button onclick="enviar(false)">Enviar 📨</button>
+      </section>
+
+      <!-- Enviar para todos -->
+      <section class="card">
+        <h2>Enviar para todos</h2>
+        <textarea id="msgBroadcast" placeholder="Mensagem para todos..."></textarea>
+        <button onclick="enviar(true)">Broadcast 📢</button>
+      </section>
+
+      <!-- Feedback de envio -->
+      <p id="feedback" class="feedback hidden"></p>
+
+    </div>
+  </main>
+
+  <script>
+    async function enviar(broadcast) {
+      const feedback = document.getElementById('feedback');
+
+      // Pega os valores dos campos
+      const userId = document.getElementById('targetUser').value.trim();
+      const message = broadcast
+        ? document.getElementById('msgBroadcast').value.trim()
+        : document.getElementById('msgSingle').value.trim();
+
+      // Validações básicas
+      if (!message) {
+        mostrarFeedback('Digite uma mensagem!', 'erro');
+        return;
+      }
+
+      if (!broadcast && !userId) {
+        mostrarFeedback('Digite o ID do usuário!', 'erro');
+        return;
+      }
+
+      // Envia pro servidor via POST
+      const res = await fetch('/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, message, broadcast })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        mostrarFeedback(broadcast ? 'Broadcast enviado! 📢' : `Enviado para ${userId}! ✅`, 'ok');
+        // Limpa os campos após envio
+        document.getElementById('msgSingle').value = '';
+        document.getElementById('msgBroadcast').value = '';
+        document.getElementById('targetUser').value = '';
+      } else {
+        mostrarFeedback('Erro ao enviar.', 'erro');
+      }
+    }
+
+    function mostrarFeedback(msg, tipo) {
+      const el = document.getElementById('feedback');
+      el.textContent = msg;
+      el.className = `feedback ${tipo}`;
+      el.classList.remove('hidden');
+
+      // Some depois de 3 segundos
+      setTimeout(() => el.classList.add('hidden'), 3000);
+    }
+  </script>
+
+</body>
+</html>
